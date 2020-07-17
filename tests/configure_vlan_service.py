@@ -17,7 +17,7 @@ def main():
     }
     service = None
 
-    with open("impact-vlan-service.yaml") as fd:
+    with open("hq-vlan-service.yaml") as fd:
         service = load(fd, Loader=Loader)
 
     # Wrap the service in the YAML file with namespaces.
