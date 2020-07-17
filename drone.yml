@@ -34,6 +34,7 @@ steps:
       VIRL_PASSWORD:
         from_secret: virl_password
     commands:
+      - if (git diff --exit-code --quiet HEAD^ HEAD -- tests "hq*.yaml" .drone.yml); then exit 78; fi
       - . /opt/ncs/ncsrc
       - cd tests && pip install -Ur requirements.txt
       - cd /nso/packages && ln -sf /drone/src/tests/vlan-service .
