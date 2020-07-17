@@ -1,0 +1,69 @@
+module vlan-service {
+  namespace "http://example.com/vlan-service";
+  prefix vlan-service;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import switch-topology {
+    prefix switch-topology;
+  }
+
+  description
+    "Define a set of VLANs.";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  list vlan-service {
+    description
+      "Devices that provide a particular set of VLANs";
+    key "name";
+    leaf name {
+      tailf:info "VLAN Set name";
+      type string;
+      description
+        "VLAN Set Name";
+    }
+    leaf topology {
+      type leafref {
+        path "/switch-topology:switch-topology/switch-topology:name";
+      }
+      mandatory true;
+      description
+        "The switch topology to which this set of VLANs belong";
+    }
+    uses ncs:service-data;
+    ncs:servicepoint "vlan-service-servicepoint";
+    list vlan {
+      key "vlanid";
+      leaf vlanid {
+        type uint16 {
+          range "1..4094";
+        }
+        description
+          "Unique ID for this VLAN";
+        tailf:info "Unique ID for this VLAN";
+      }
+      leaf name {
+        type string {
+          pattern "[\\d\\w_\\.-]+";
+        }
+        mandatory true;
+        tailf:info "Name of this VLAN";
+        description
+          "Name of this VLAN";
+      }
+      description
+        "Set of VLANs for this service";
+    }
+  }
+}

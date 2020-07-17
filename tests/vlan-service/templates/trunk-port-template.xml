@@ -1,0 +1,24 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <!-- Select the devices from some data structure in the service model. In this skeleton the devices are specified in a leaf-list. Select all devices in that leaf-list: -->
+      <name>{$DEVICE_NAME}</name>
+      <config>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet>
+            <name>{$TRUNK_PORT}</name>
+            <switchport>
+              <trunk>
+                <allowed>
+                  <vlan>
+                    <vlans>{$VLAN_ID}</vlans>
+                  </vlan>
+                </allowed>
+              </trunk>
+            </switchport>
+          </GigabitEthernet>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

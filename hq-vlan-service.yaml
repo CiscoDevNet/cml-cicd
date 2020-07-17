@@ -1,0 +1,7 @@
+name: headquarters
+topology: headquarters
+vlan:
+  - vlanid: 11
+    name: USERS
+  - vlanid: 12
+    name: PRINTERS

@@ -1,0 +1,78 @@
+name: cml-cicd
+kind: pipeline
+type: docker
+
+steps:
+  - name: cml-test
+    image: nso:cicd
+    volumes:
+      - name: cml-dir
+        path: /cml
+    environment:
+      ACCESS_IP_ADDRESS:
+        from_secret: access_ip_address
+      DIST_IP_ADDRESS:
+        from_secret: dist_ip_address
+      CORE_IP_ADDRESS:
+        from_secret: core_ip_address
+      SUBNET_MASK:
+        from_secret: subnet_mask
+      HQ_USERNAME:
+        from_secret: hq_username
+      HQ_PASSWORD:
+        from_secret: hq_password
+      NSO_USERNAME:
+        from_secret: nso_username
+      NSO_PASSWORD:
+        from_secret: nso_password
+      VIRL_HOST:
+        from_secret: virl_host
+      CML2_PLUS: yes
+      CML_VERIFY_CERT: "False"
+      VIRL_USERNAME:
+        from_secret: virl_username
+      VIRL_PASSWORD:
+        from_secret: virl_password
+    commands:
+      - . /opt/ncs/ncsrc
+      - cd tests && pip install -Ur requirements.txt
+      - cd /nso/packages && ln -sf /drone/src/tests/vlan-service .
+      - cd .. && ncs --with-package-reload >/dev/null 2>&1
+      - cd /tmp && git clone https://github.com/CiscoDevNet/virlutils.git
+      - cd virlutils && git checkout cml2-dev && python setup.py install
+      - cd /drone/src/tests
+      - python gen_cml_topology.py
+      - cd /cml
+      - cml up -f /drone/src/tests/topology.yaml --provision
+      - cd /drone/src && python tests/populate_nso.py
+      - python tests/configure_vlan_service.py
+      - python tests/test_vlan_service.py
+
+  - name: cleanup
+    image: nso:cicd
+    when:
+      status:
+        - success
+        - failure
+    volumes:
+      - name: cml-dir
+        path: /cml
+    failure: ignore
+    environment:
+      VIRL_HOST:
+        from_secret: virl_host
+      CML2_PLUS: yes
+      CML_VERIFY_CERT: "False"
+      VIRL_USERNAME:
+        from_secret: virl_username
+      VIRL_PASSWORD:
+        from_secret: virl_password
+    commands:
+      - cd /tmp && git clone https://github.com/CiscoDevNet/virlutils.git
+      - cd virlutils && git checkout cml2-dev && python setup.py install
+      - cd /cml
+      - cml rm --force --no-confirm
+
+volumes:
+  - name: cml-dir
+    temp: {}

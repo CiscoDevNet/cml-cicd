@@ -1,0 +1,21 @@
+topology: headquarters
+
+devices:
+  - name: sw-core
+    address: 192.168.10.207
+    ned_id: cisco-ios-cli-3.8:cisco-ios-cli-3.8
+    os: ios
+    downlink_trunks:
+      - "0/1"
+  - name: sw-dist
+    address: 192.168.10.208
+    ned_id: cisco-ios-cli-3.8:cisco-ios-cli-3.8
+    os: ios
+    uplink_trunk: "0/1"
+    downlink_trunks:
+      - "0/2"
+  - name: sw-access
+    address: 192.168.10.191
+    ned_id: cisco-ios-cli-3.8:cisco-ios-cli-3.8
+    os: ios
+    uplink_trunk: "0/1"

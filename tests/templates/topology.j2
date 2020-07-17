@@ -1,0 +1,581 @@
+lab:
+  description: ''
+  notes: ''
+  timestamp: 1594737422.3398635
+  title: "{{ TOPOLOGY_NAME }}"
+  version: 0.0.3
+nodes:
+  - id: n0
+    label: sw-core
+    node_definition: iosvl2
+    x: -300
+    y: -150
+    configuration: |-
+      Building configuration...
+
+      Current configuration : 3284 bytes
+      !
+      ! Last configuration change at 18:53:48 UTC Thu Jul 16 2020
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      !
+      hostname sw-core
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      !
+      username jclarke privilege 15 secret 5 $1$No/F$I/yatMX07sgtkExAG54w9/
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      ip vrf mgmt
+      !
+      !
+      !
+      ip domain-name marcuscom.com
+      ip cef
+      no ipv6 cef
+      !
+      !
+      !
+      spanning-tree mode rapid-pvst
+      spanning-tree extend system-id
+      spanning-tree vlan 1-4094 priority 0
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      interface GigabitEthernet0/0
+       no switchport
+       ip vrf forwarding mgmt
+       ip address {{ CORE_IP_ADDRESS }} {{ SUBNET_MASK }}
+       negotiation auto
+      !
+      interface GigabitEthernet0/1
+       description Core : Link to sw-dist
+       switchport trunk allowed vlan 10
+       switchport trunk encapsulation dot1q
+       switchport mode trunk
+       switchport nonegotiate
+       load-interval 30
+       negotiation auto
+       spanning-tree portfast network
+       spanning-tree link-type point-to-point
+      !
+      interface GigabitEthernet0/2
+       negotiation auto
+      !
+      interface GigabitEthernet0/3
+       negotiation auto
+      !
+      ip forward-protocol nd
+      !
+      ip http server
+      ip http secure-server
+      !
+      ip ssh version 2
+      ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+      ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      banner exec ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      banner incoming ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      banner login ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      !
+      line con 0
+       exec-timeout 0 0
+      line aux 0
+      line vty 0 4
+       login local
+      line vty 5 15
+       login local
+      !
+      !
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n1
+    label: sw-dist
+    node_definition: iosvl2
+    x: -300
+    y: -50
+    configuration: |-
+      Building configuration...
+
+      Current configuration : 3534 bytes
+      !
+      ! Last configuration change at 19:11:50 UTC Thu Jul 16 2020
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      !
+      hostname sw-dist
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      !
+      username jclarke privilege 15 secret 5 $1$6B8v$2YPHomvdzJP.ImOjkF.2i1
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      ip vrf mgmt
+      !
+      !
+      !
+      ip domain-name marcuscom.com
+      ip cef
+      no ipv6 cef
+      !
+      !
+      !
+      spanning-tree mode rapid-pvst
+      spanning-tree extend system-id
+      spanning-tree vlan 1-4094 priority 4096
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      interface GigabitEthernet0/0
+       no switchport
+       ip vrf forwarding mgmt
+       ip address {{ DIST_IP_ADDRESS }} {{ SUBNET_MASK }}
+       negotiation auto
+      !
+      interface GigabitEthernet0/1
+       description Core : Link to sw-core
+       switchport trunk allowed vlan 10
+       switchport trunk encapsulation dot1q
+       switchport mode trunk
+       switchport nonegotiate
+       load-interval 30
+       negotiation auto
+       spanning-tree portfast network
+       spanning-tree link-type point-to-point
+      !
+      interface GigabitEthernet0/2
+       description Core : Link to sw-access
+       switchport trunk allowed vlan 10
+       switchport trunk encapsulation dot1q
+       switchport mode trunk
+       switchport nonegotiate
+       load-interval 30
+       negotiation auto
+       spanning-tree portfast network
+       spanning-tree link-type point-to-point
+      !
+      interface GigabitEthernet0/3
+       negotiation auto
+      !
+      ip forward-protocol nd
+      !
+      ip http server
+      ip http secure-server
+      !
+      ip ssh version 2
+      ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+      ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      banner exec ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      banner incoming ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      banner login ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      !
+      line con 0
+       exec-timeout 0 0
+      line aux 0
+      line vty 0 4
+       login local
+      line vty 5 15
+       login local
+      !
+      !
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n2
+    label: sw-access
+    node_definition: iosvl2
+    x: -300
+    y: 50
+    configuration: |-
+      Building configuration...
+
+      Current configuration : 3289 bytes
+      !
+      ! Last configuration change at 19:05:41 UTC Thu Jul 16 2020
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      !
+      hostname sw-access
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      !
+      username jclarke privilege 15 secret 5 $1$sdsI$kB9mLr6aWcs4UecP2kX6A.
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      ip vrf mgmt
+      !
+      !
+      !
+      ip domain-name marcuscom.com
+      ip cef
+      no ipv6 cef
+      !
+      !
+      !
+      spanning-tree mode rapid-pvst
+      spanning-tree extend system-id
+      spanning-tree vlan 1-4094 priority 8192
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      interface GigabitEthernet0/0
+       no switchport
+       ip vrf forwarding mgmt
+       ip address {{ ACCESS_IP_ADDRESS }} {{ SUBNET_MASK }}
+       negotiation auto
+      !
+      interface GigabitEthernet0/1
+       description Core : Link to sw-dist
+       switchport trunk allowed vlan 10
+       switchport trunk encapsulation dot1q
+       switchport mode trunk
+       switchport nonegotiate
+       load-interval 30
+       negotiation auto
+       spanning-tree portfast network
+       spanning-tree link-type point-to-point
+      !
+      interface GigabitEthernet0/2
+       negotiation auto
+      !
+      interface GigabitEthernet0/3
+       negotiation auto
+      !
+      ip forward-protocol nd
+      !
+      ip http server
+      ip http secure-server
+      !
+      ip ssh version 2
+      ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+      ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      banner exec ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      banner incoming ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      banner login ^C
+      **************************************************************************
+      * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+      * education. IOSv is provided as-is and is not supported by Cisco's      *
+      * Technical Advisory Center. Any use or disclosure, in whole or in part, *
+      * of the IOSv Software or Documentation to any third party for any       *
+      * purposes is expressly prohibited except as otherwise authorized by     *
+      * Cisco in writing.                                                      *
+      **************************************************************************^C
+      !
+      line con 0
+       exec-timeout 0 0
+      line aux 0
+      line vty 0 4
+       login local
+      line vty 5 15
+       login local
+      !
+      !
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n3
+    label: sw-mgmt
+    node_definition: unmanaged_switch
+    x: -550
+    y: -50
+    configuration: ''
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: port0
+        type: physical
+      - id: i1
+        slot: 1
+        label: port1
+        type: physical
+      - id: i2
+        slot: 2
+        label: port2
+        type: physical
+      - id: i3
+        slot: 3
+        label: port3
+        type: physical
+      - id: i4
+        slot: 4
+        label: port4
+        type: physical
+      - id: i5
+        slot: 5
+        label: port5
+        type: physical
+      - id: i6
+        slot: 6
+        label: port6
+        type: physical
+      - id: i7
+        slot: 7
+        label: port7
+        type: physical
+  - id: n4
+    label: OOB Management
+    node_definition: external_connector
+    x: -550
+    y: -150
+    configuration: bridge0
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: port
+        type: physical
+links:
+  - id: l0
+    i1: i0
+    n1: n3
+    i2: i1
+    n2: n0
+  - id: l1
+    i1: i1
+    n1: n3
+    i2: i1
+    n2: n1
+  - id: l2
+    i1: i2
+    n1: n3
+    i2: i1
+    n2: n2
+  - id: l3
+    i1: i3
+    n1: n3
+    i2: i0
+    n2: n4
+  - id: l4
+    i1: i2
+    n1: n0
+    i2: i2
+    n2: n1
+  - id: l5
+    i1: i3
+    n1: n1
+    i2: i2
+    n2: n2

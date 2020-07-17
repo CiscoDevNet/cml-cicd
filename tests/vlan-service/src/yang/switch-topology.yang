@@ -1,0 +1,94 @@
+module switch-topology {
+  namespace "http://example.com/switch-topology";
+  prefix switch-topology;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import tailf-ned-cisco-ios {
+    prefix ios;
+  }
+
+  description
+    "Representation of upstream and downstream switch links.";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  list switch-topology {
+    description
+      "Set of switches in a given topology";
+    key "name";
+    leaf name {
+      tailf:info "Topology name";
+      type string;
+      description
+        "Topology name";
+    }
+    uses ncs:service-data;
+    ncs:servicepoint "switch-topology-servicepoint";
+    list switch {
+      ordered-by user;
+      key "device";
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+        description
+          "Name of the switch in the topology";
+      }
+      choice downlink {
+        default "other";
+        case ios {
+          when "/ncs:devices/ncs:device[ncs:name=current()/device]/ncs:config/ios:interface";
+          leaf-list downlink-trunk {
+            type leafref {
+              path "/ncs:devices/ncs:device[ncs:name=current()/../device]/ncs:config/ios:interface/ios:GigabitEthernet/ios:name";
+            }
+            description
+              "Downlink trunk port";
+          }
+        }
+        case other {
+          when "not(/ncs:devices/ncs:device[ncs:name=current()/device]/ncs:config/ios:interface)";
+          leaf-list downlink-trunk-name {
+            type string;
+            description
+              "Downlink trunk port name";
+          }
+        }
+      }
+      choice uplink {
+        default "other";
+        case ios {
+          when "/ncs:devices/ncs:device[ncs:name=current()/device]/ncs:config/ios:interface";
+          leaf uplink-trunk {
+            type leafref {
+              path "/ncs:devices/ncs:device[ncs:name=current()/../device]/ncs:config/ios:interface/ios:GigabitEthernet/ios:name";
+            }
+            description
+              "Uplink trunk port";
+          }
+        }
+        case other {
+          when "not(/ncs:devices/ncs:device[ncs:name=current()/device]/ncs:config/ios:interface)";
+          leaf uplink-trunk-name {
+            type string;
+            description
+              "Uplink trunk port name";
+          }
+        }
+      }
+      description
+        "Switches in this topology";
+    }
+  }
+}
